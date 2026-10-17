@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>মজার কুইজ 🌈</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Noto Sans Bengali", "Segoe UI", sans-serif;
+      background: linear-gradient(135deg, #ffd6e7, #d7f5ff, #fff0b8, #dfffd8);
+      background-size: 400% 400%;
+      animation: bg 12s ease infinite;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      color: #333;
+    }
+    @keyframes bg {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .card {
+      width: min(720px, 100%);
+      background: rgba(255,255,255,.94);
+      border-radius: 30px;
+      padding: 32px;
+      box-shadow: 0 18px 50px rgba(73, 57, 95, .18);
+      text-align: center;
+    }
+    .emoji { font-size: 48px; }
+    h1 {
+      margin: 8px 0 8px;
+      color: #7c4dff;
+      font-size: clamp(30px, 6vw, 46px);
+    }
+    .subtitle {
+      color: #666;
+      font-size: 18px;
+      margin-bottom: 26px;
+    }
+    .progress {
+      display: inline-block;
+      background: #fff1a8;
+      color: #704f00;
+      border-radius: 999px;
+      padding: 8px 18px;
+      font-weight: 700;
+      margin-bottom: 22px;
+    }
+    .question-box {
+      background: linear-gradient(135deg, #eef1ff, #fff0f7);
+      border-radius: 24px;
+      padding: 28px 20px;
+      margin-bottom: 20px;
+    }
+    #question {
+      font-size: clamp(23px, 4vw, 32px);
+      line-height: 1.5;
+      margin: 0;
+      color: #3f3b67;
+      font-weight: 800;
+    }
+    input {
+      width: 100%;
+      border: 3px solid #b9a8ff;
+      border-radius: 18px;
+      padding: 15px 18px;
+      font-size: 19px;
+      outline: none;
+      transition: .2s;
+      margin-bottom: 14px;
+    }
+    input:focus {
+      border-color: #ff7eb6;
+      box-shadow: 0 0 0 5px rgba(255,126,182,.15);
+    }
+    button {
+      border: 0;
+      border-radius: 18px;
+      padding: 14px 30px;
+      font-size: 18px;
+      font-weight: 800;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff73ad, #8d72ff);
+      color: white;
+      box-shadow: 0 8px 18px rgba(141,114,255,.25);
+      transition: transform .15s, box-shadow .15s;
+    }
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 11px 22px rgba(141,114,255,.3);
+    }
+    button:active { transform: translateY(0); }
+    .hidden { display: none; }
+    .end-emoji { font-size: 70px; }
+    .footer {
+      margin-top: 20px;
+      color: #888;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <main class="card">
+    <section id="quizScreen">
+      <div class="emoji">🌈🧠✨</div>
+      <h1>মজার কুইজ!</h1>
+      <div class="subtitle">চলো, দেখি তুমি কত কিছু জানো!</div>
+
+      <div class="progress" id="progress">প্রশ্ন ১ / ২০</div>
+
+      <div class="question-box">
+        <p id="question"></p>
+      </div>
+
+      <input id="answer" type="text" placeholder="তোমার উত্তর এখানে লেখো..." autocomplete="off">
+      <br>
+      <button id="nextBtn">পরের প্রশ্ন ➜</button>
+
+      <div class="footer">🇮🇳 ভারতীয় সাধারণ জ্ঞান • ছোটদের জন্য</div>
+    </section>
+
+    <section id="endScreen" class="hidden">
+      <div class="end-emoji">🎉🌟🎈</div>
+      <h1>কুইজ শেষ!</h1>
+      <p class="subtitle">অংশগ্রহণ করার জন্য ধন্যবাদ! 💖</p>
+      <button onclick="restartQuiz()">আবার খেলো 🔄</button>
+    </section>
+  </main>
+
+  <script>
+    const questions = [
+      "ভারতের রাজধানীর নাম কী?",
+      "ভারতের জাতীয় পশু কী?",
+      "ভারতের জাতীয় পাখি কী?",
+      "ভারতের জাতীয় ফুল কী?",
+      "ভারতের জাতীয় ফল কী?",
+      "ভারতের জাতীয় পতাকায় কয়টি রং আছে?",
+      "ভারতের মুদ্রার নাম কী?",
+      "ভারতের জাতীয় সঙ্গীতের নাম কী?",
+      "পশ্চিমবঙ্গের রাজধানীর নাম কী?",
+      "ভারতের স্বাধীনতা দিবস কবে পালিত হয়?",
+      "ভারতের প্রজাতন্ত্র দিবস কবে পালিত হয়?",
+      "সূর্য কোন দিকে ওঠে?",
+      "পৃথিবীর উপগ্রহের নাম কী?",
+      "এক সপ্তাহে কয়টি দিন থাকে?",
+      "এক বছরে সাধারণত কয়টি মাস থাকে?",
+      "জলের রাসায়নিক সংকেত কী?",
+      "আমাদের সৌরজগতের সবচেয়ে কাছের নক্ষত্র কোনটি?",
+      "ভারতে মোট কতটি ঋতু প্রচলিতভাবে বলা হয়?",
+      "বাঘের বাচ্চাকে কী বলা হয়?",
+      "ভারতের জাতীয় বৃক্ষ কী?"
+    ];
+
+    let current = 0;
+
+    const questionEl = document.getElementById("question");
+    const progressEl = document.getElementById("progress");
+    const answerEl = document.getElementById("answer");
+    const nextBtn = document.getElementById("nextBtn");
+    const quizScreen = document.getElementById("quizScreen");
+    const endScreen = document.getElementById("endScreen");
+
+    function showQuestion() {
+      questionEl.textContent = questions[current];
+      progressEl.textContent = `প্রশ্ন ${current + 1} / ${questions.length}`;
+      answerEl.value = "";
+      answerEl.focus();
+      nextBtn.textContent = current === questions.length - 1
+        ? "কুইজ শেষ করুন 🎉"
+        : "পরের প্রশ্ন ➜";
+    }
+
+    nextBtn.addEventListener("click", () => {
+      if (current < questions.length - 1) {
+        current++;
+        showQuestion();
+      } else {
+        quizScreen.classList.add("hidden");
+        endScreen.classList.remove("hidden");
+      }
+    });
+
+    answerEl.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") nextBtn.click();
+    });
+
+    function restartQuiz() {
+      current = 0;
+      endScreen.classList.add("hidden");
+      quizScreen.classList.remove("hidden");
+      showQuestion();
+    }
+
+    showQuestion();
+  </script>
+</body>
+</html>
